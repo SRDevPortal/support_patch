@@ -8,7 +8,7 @@ app_license = "mit"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["erpnext", "healthcare"]
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
@@ -43,7 +43,7 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Issue": "public/js/issue.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -83,7 +83,8 @@ app_license = "mit"
 # ------------
 
 # before_install = "support_patch.install.before_install"
-# after_install = "support_patch.install.after_install"
+after_install = "support_patch.install.after_install"
+after_migrate = "support_patch.install.after_migrate"
 
 # Uninstallation
 # ------------
@@ -137,13 +138,11 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Issue": {
+		"validate": "support_patch.issue.validate_medical_department",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -169,7 +168,7 @@ app_license = "mit"
 # Testing
 # -------
 
-# before_tests = "support_patch.install.before_tests"
+before_tests = "support_patch.install.before_tests"
 
 # Overriding Methods
 # ------------------------------
@@ -246,4 +245,3 @@ app_license = "mit"
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-
