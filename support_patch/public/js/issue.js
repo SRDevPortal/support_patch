@@ -114,8 +114,8 @@ function build_customer_card(details) {
 	if (details.customer_id) {
 		rows.push(detail_row(__("Customer ID"), escape(details.customer_id)));
 	}
-	if (details.mobile_no) {
-		rows.push(detail_row(__("Phone"), escape(details.mobile_no)));
+	if (details.mobile_no || details.mask_mobile) {
+		rows.push(detail_row(__("Mobile"), escape(details.mobile_no || details.mask_mobile)));
 	}
 	if (details.email_id) {
 		rows.push(detail_row(__("Email"), escape(details.email_id)));
