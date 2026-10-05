@@ -47,28 +47,29 @@ def get_customer_details(customer):
 	customer_doc = frappe.get_doc("Customer", customer)
 	customer_doc.check_permission("read")
 
-	customer_id = customer_doc.get("sr_customer_id") if customer_doc.meta.has_field("sr_customer_id") else None
-	primary_address = customer_doc.get("primary_address") or ""
-
-	result = {
-		"name": customer_doc.name,
-		"customer_name": customer_doc.customer_name,
-		"customer_id": customer_id,
-		"mobile_no": customer_doc.get("mobile_no"),
-		"email_id": customer_doc.get("email_id"),
-		"primary_address": clean_html(primary_address) if primary_address else "",
-	}
+	permitted = set(customer_doc.permitted_fieldnames)
+	result = {"name": customer_doc.name}
+	for fieldname in ("customer_name", "mobile_no", "email_id"):
+		if fieldname in permitted:
+			result[fieldname] = customer_doc.get(fieldname)
+	if customer_doc.meta.has_field("sr_customer_id") and "sr_customer_id" in permitted:
+		result["customer_id"] = customer_doc.get("sr_customer_id")
+	if "primary_address" in permitted:
+		primary_address = customer_doc.get("primary_address") or ""
+		result["primary_address"] = clean_html(primary_address) if primary_address else ""
 
 	if "privacy_shield" in frappe.get_installed_apps():
 		from privacy_shield.activation import enabled_for
 		if enabled_for("support_customer_details"):
 			from privacy_shield.policy import current_capabilities
 			from privacy_shield.projections import project_numbers
-			if "mobile_no" not in customer_doc.permitted_fieldnames:
-				result.pop("mobile_no", None)
 			capabilities = current_capabilities()
 			result = project_numbers(result, {"mobile_no": "mask_mobile"}, capabilities.view_full)
+			result["number_restricted"] = not capabilities.view_full
 			if not capabilities.view_full:
 				from privacy_shield.address_views import support_address
+				from privacy_shield.display_text import mask_display
+				if "customer_name" in result:
+					result["customer_name"] = mask_display(result["customer_name"])
 				result["primary_address"] = support_address(customer_doc)
 	return result
