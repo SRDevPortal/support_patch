@@ -245,3 +245,8 @@ before_tests = "support_patch.install.before_tests"
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
+
+# Source snapshot metadata for the native About dialog.
+override_whitelisted_methods = {
+    "frappe.utils.change_log.get_versions": "support_patch.release_metadata.get_versions"
+}
